@@ -1,0 +1,7 @@
+{
+  "features": [
+    "Total Length of Fwd Packets",
+    "Flow Bytes/s",
+    "FIN Flag Count"
+  ]
+}
