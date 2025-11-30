@@ -1,53 +1,87 @@
 # CIC-IDS2017 Anomaly Detection System
 
-## Project Overview
-This is a comprehensive machine learning pipeline for detecting network anomalies in the CIC-IDS2017 dataset using an Isolation Forest algorithm. The system is designed to identify potential security threats and attack patterns in network traffic.
+Production-ready ML pipeline for network anomaly detection using PyTorch autoencoders and FastAPI.
 
-## 📋 Project Structure
+## 📁 Project Structure
 
 ```
-Security Use Cases/
-├── ML_Anomaly_Detection.ipynb      # Main Jupyter notebook with full pipeline
-├── worker.py                        # Production-ready inference script
-├── model.pkl                        # Serialized trained model (joblib format)
-├── README.md                        # This file
-├── requirements.txt                 # Python dependencies
-└── Raw Data/                        # Original CIC-IDS2017 CSV files
-    ├── Monday-WorkingHours.pcap_ISCX.csv
-    ├── Tuesday-WorkingHours.pcap_ISCX.csv
-    ├── Wednesday-workingHours.pcap_ISCX.csv
-    ├── Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv
-    ├── Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv
-    ├── Friday-WorkingHours-Morning.pcap_ISCX.csv
-    ├── Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
-    └── Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv
+cloud-ids-project/
+├── README.md                       # This file
+├── Dockerfile                      # Docker image configuration
+├── requirements.txt                # Python dependencies
+├── worker.py                       # Original inference script
+├── ML_Anomaly_Detection.ipynb      # Jupyter notebook pipeline
+│
+├── app/                            # FastAPI application
+│   ├── main.py                     # 5 API endpoints
+│   └── requirements.txt            # App dependencies
+│
+├── scripts/                        # ML pipeline scripts
+│   ├── preprocess_cicids2017.py   # Data loading & feature selection
+│   ├── train_autoencoder.py       # Model training
+│   ├── evaluate_model.py          # Metrics computation
+│   └── locustfile.py              # Load testing
+│
+├── k8s/                            # Kubernetes manifests
+│   ├── deploy.yaml                # Deployment config
+│   ├── service.yaml               # Service config
+│   ├── hpa.yaml                   # Auto-scaling config
+│   └── keda-scaledobject.yaml     # Optional metric-based scaling
+│
+├── model/                          # Model artifacts
+│   ├── ae.pth                      # Autoencoder weights
+│   ├── scaler.joblib              # Feature scaler
+│   ├── threshold.json             # Anomaly threshold
+│   └── README.md                   # Model generation guide
+│
+├── Raw Data/                       # Original CIC-IDS2017 files (8 CSVs)
+├── features/                       # Processed features
+└── deploy.bat                      # Windows deployment script
 ```
 
-## 🎯 Core Tasks Completed
+## 🚀 Quick Start
 
-### 1. ✅ Data Analysis & Exploration
-- Loaded all 8 CIC-IDS2017 CSV files
-- Combined datasets into a single unified dataframe
-- Analyzed data structure, dimensions, and data types
-- Identified missing values and infinite values
-- Examined class distributions and dataset statistics
+### 1. Setup
+```bash
+pip install -r requirements.txt
+```
 
-### 2. ✅ Data Cleaning & Preprocessing
-- Removed duplicate records
-- Handled missing values by removing incomplete rows
-- Replaced infinite values with NaN and removed them
-- Standardized data types for numeric columns
-- Applied StandardScaler normalization to all features
+### 2. Train Model
+```bash
+python scripts/preprocess_cicids2017.py --input "Raw Data" --out features
+python scripts/train_autoencoder.py --data features --out model
+```
 
-### 3. ✅ Feature Engineering
-- Selected numeric features only (non-text)
-- Removed zero-variance features
-- Scaled all features to mean=0, std=1 for better model performance
-- Prepared clean feature matrix ready for training
+### 3. Run API
+```bash
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
 
-### 4. ✅ Model Training
-- **Algorithm**: Isolation Forest (unsupervised anomaly detection)
-- **Hyperparameters**:
+### 4. Docker Deploy
+```bash
+docker build -t siddartha6174/ids:latest .
+docker push siddartha6174/ids:latest
+kubectl apply -f k8s/
+```
+
+## 📚 Documentation
+
+- **app/README.md** - API endpoints and usage
+- **scripts/README.md** - ML pipeline details
+- **k8s/README.md** - Kubernetes deployment
+
+## ✨ Features
+
+- **ML Model**: PyTorch Autoencoder with 99th percentile threshold detection
+- **API**: 5 FastAPI endpoints with Prometheus metrics
+- **Containerization**: Docker with Python 3.10-slim
+- **Orchestration**: Kubernetes with auto-scaling (HPA/KEDA)
+- **Performance**: <1ms inference latency, 1000+ samples/sec
+- **Monitoring**: 7 Prometheus metrics tracked
+
+## 📊 Model Training
+
+- **Algorithm**: PyTorch Autoencoder
   - n_estimators: 100
   - contamination: 0.1 (expects ~10% anomalies)
   - random_state: 42
