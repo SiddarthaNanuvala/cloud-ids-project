@@ -1,0 +1,9 @@
+# Large binary files
+*.pkl binary
+
+# Raw data CSV files (track these for reproducibility)
+*.csv binary
+
+# Mark documentation files
+*.md text
+*.txt text

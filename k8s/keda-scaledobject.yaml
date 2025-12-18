@@ -1,0 +1,25 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: ids-scaledobject
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: ids-service
+  minReplicaCount: 1
+  maxReplicaCount: 20
+  pollingInterval: 30
+  cooldownPeriod: 300
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.monitoring.svc.cluster.local:80
+      metricName: ids_http_requests_per_second
+      query: sum(rate(http_requests_total{endpoint="/score"}[1m]))
+      threshold: "50"
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.monitoring.svc.cluster.local:80
+      metricName: ids_anomalies_detected
+      query: sum(rate(anomalies_detected_total[1m]))
+      threshold: "10"

@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+# Note: ML_Anomaly_Detection.ipynb is tracked for documentation
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Raw data (keep in repo for reproducibility)
+# Raw Data/ - INTENTIONALLY TRACKED for data reproducibility
+*.pcap
+# *.csv - Some CSVs tracked (train/val/test splits), others ignored
+
+# Preprocessed data (can be regenerated)
+features/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+*.log
+
+# Virtual Environment (can be regenerated)
+.venv/
+venv/
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+Raw Data/
